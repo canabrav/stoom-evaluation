@@ -26,6 +26,12 @@ public class AddressController {
 	@Autowired
 	private AddressService service;
 	
+	@RequestMapping(value = "/address/ping", method = RequestMethod.GET)
+	public ResponseEntity<Collection<Address>> ping() {
+		return new ResponseEntity<Collection<Address>>(HttpStatus.OK);
+	}
+
+	
 	@RequestMapping(value = "/address/all", method = RequestMethod.GET)
 	public ResponseEntity<Collection<Address>> listAll() {
 		

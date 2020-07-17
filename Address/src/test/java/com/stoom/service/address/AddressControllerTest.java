@@ -1,18 +1,24 @@
 package com.stoom.service.address;
 
-import static com.stoom.common.Json.*;
-import static org.junit.Assert.*;
-import static org.apache.commons.lang3.StringUtils.*;
+import static com.stoom.common.Json.parse;
+import static com.stoom.common.Json.stringify;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 
 import org.apache.http.HttpStatus;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.boot.SpringApplication;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -25,12 +31,21 @@ import com.stoom.common.HttpClientAdapter;
  * @author Rodrigo
  *
  */
-//@RunWith(SpringJUnit4ClassRunner.class)
-//@SpringApplicationConfiguration(classes = AddressServiceLoader.class)
 public class AddressControllerTest {
 
-	private String BASE_URL = "http://localhost:8080";
+	private static String BASE_URL = "http://localhost:8080";
 	
+	@BeforeClass
+	public static void startUp() {
+		SpringApplication.run(AddressServiceLoader.class, new String[]{});
+
+		HttpClientAdapter client = new HttpClientAdapter(BASE_URL + "/address/ping");
+		do {
+			client.get();
+		} while (client.getHttpStatus() != HttpStatus.SC_OK);
+	}
+
+
 	@Test
 	public void testListAll() {
 		HttpClientAdapter client = new HttpClientAdapter(BASE_URL + "/address/all");

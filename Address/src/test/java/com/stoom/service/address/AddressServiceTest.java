@@ -36,6 +36,40 @@ public class AddressServiceTest {
 
 
 	@Test
+	public void testSaveCalculateLatLong() throws ValidationException {
+		Address beforeSave = new Address("R. Dr. Pereira Lima", "85", null, "Vila Industrial", "Campinas", "SP", "Brasil").withZipCode("13035-505");
+
+		assertTrue(beforeSave.isMissingLatLong());
+		assertNull(beforeSave.getLatitude());
+		assertNull(beforeSave.getLongitude());
+
+		Address address = service.save(beforeSave);
+		assertNotNull(address.getId());
+		
+		assertFalse(address.isMissingLatLong());
+		assertNotNull(address.getLatitude());
+		assertNotNull(address.getLongitude());
+	}
+
+	
+	@Test
+	public void testSaveWithLatLong() throws ValidationException {
+		Address beforeSave = new Address("Rua dos Bobos", "1", null, "Limoeiro", "Sabará", "MG", "Brasil").withZipCode("30000-000").withLatLong(-23d, -42d);
+
+		assertFalse(beforeSave.isMissingLatLong());
+		assertNotNull(beforeSave.getLatitude());
+		assertNotNull(beforeSave.getLongitude());
+
+		Address address = service.save(beforeSave);
+		assertNotNull(address.getId());
+		
+		assertFalse(address.isMissingLatLong());
+		assertEquals(Double.valueOf(-23d), address.getLatitude());
+		assertEquals(Double.valueOf(-42d), address.getLongitude());
+	}
+
+
+	@Test
 	public void testSetId() throws ValidationException {
 		
 		Long invalidId = 1001L;

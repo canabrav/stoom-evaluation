@@ -9,6 +9,7 @@ import org.springframework.util.Assert;
 
 import com.stoom.service.address.exception.ExcessiveLoadDataAccessException;
 import com.stoom.service.address.exception.ValidationException;
+import com.stoom.service.address.geocode.GoogleMapsServicesProxy;
 
 /**
  * This class provides the Service Layer (transactional layer) for the Address microservice.
@@ -20,11 +21,14 @@ import com.stoom.service.address.exception.ValidationException;
 public class AddressService {
 
 	private final AddressRepository repository;
+	
+	private final GoogleMapsServicesProxy googleProxy;
 
 	@Autowired
-	public AddressService(AddressRepository repository) {
+	public AddressService(AddressRepository repository, GoogleMapsServicesProxy googleProxy) {
 		super();
 		this.repository = repository;
+		this.googleProxy = googleProxy;
 	}
 	
 	public Address save(Address address) throws ValidationException {
@@ -32,6 +36,10 @@ public class AddressService {
 		Assert.notNull(address, "address must not be null");
 		
 		address.validate();
+		
+		if (address.isMissingLatLong()) {
+			googleProxy.fillLatLong(address);
+		}
 		
 		return repository.save(address);
 

@@ -10,6 +10,7 @@ import javax.persistence.Id;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.stoom.service.address.exception.ValidationException;
 
 /**
@@ -52,10 +53,10 @@ public class Address implements Serializable {
 	private String zipCode;
 
 	@Column(nullable = true)
-	private String latitude;
+	private Double latitude;
 
 	@Column(nullable = true)
-	private String longitude;
+	private Double longitude;
 
 
 	public Address() {
@@ -150,19 +151,19 @@ public class Address implements Serializable {
 		this.zipCode = zipCode;
 	}
 
-	public String getLatitude() {
+	public Double getLatitude() {
 		return latitude;
 	}
 
-	public void setLatitude(String latitude) {
+	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
 
-	public String getLongitude() {
+	public Double getLongitude() {
 		return longitude;
 	}
 
-	public void setLongitude(String longitude) {
+	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
 
@@ -296,11 +297,23 @@ public class Address implements Serializable {
 		return this;
 	}
 
-	public Address withLatLong(String latitude, String longitude) {
+	public Address withLatLong(Double latitude, Double longitude) {
 		this.latitude = latitude;
 		this.longitude = longitude;
 		return this;
 	}
+
+	
+	/**
+	 * 
+	 * @return true if latitude and or longitude are not set
+	 */
+	@JsonIgnore
+	public boolean isMissingLatLong() {
+		return this.latitude == null || this.longitude == null;
+	}
+
+
 
 	public Address withId(Long id) {
 		this.id = id;
@@ -308,6 +321,10 @@ public class Address implements Serializable {
 	}
 
 
+	/**
+	 * Validates this instance, checking if mandatory fields are missing.
+	 * @throws ValidationException if any mandatory field is missing
+	 */
 	public void validate() throws ValidationException {
 		for (Field field: this.getClass().getDeclaredFields()) {
 			if (field.isAnnotationPresent(Column.class)) {
@@ -336,6 +353,13 @@ public class Address implements Serializable {
 	
 	private boolean isEmpty(Object object) {
 		return object == null || (object instanceof CharSequence && StringUtils.isBlank(object.toString()));
+	}
+
+
+
+	public String toGoogleString() {
+		return String.format("%s %s, %s, %s, %s", 
+				this.number, this.streetName, this.city, this.state, this.country).replaceAll(" ", "+");
 	}
 
 }
