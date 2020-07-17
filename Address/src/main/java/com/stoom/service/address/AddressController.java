@@ -27,8 +27,8 @@ public class AddressController {
 	private AddressService service;
 	
 	@RequestMapping(value = "/address/ping", method = RequestMethod.GET)
-	public ResponseEntity<Collection<Address>> ping() {
-		return new ResponseEntity<Collection<Address>>(HttpStatus.OK);
+	public ResponseEntity<String> ping() {
+		return new ResponseEntity<String>("Up", HttpStatus.OK);
 	}
 
 	
